@@ -3,14 +3,14 @@ import {
   messagesApiClient as messagesApi,
   consumerGroupsApiClient,
   messagesApiClient,
-} from 'lib/api';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+} from "lib/api";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   ClusterName,
   TopicFormData,
   TopicFormDataRaw,
   TopicFormFormattedParams,
-} from 'redux/interfaces';
+} from "redux/interfaces";
 import {
   CreateTopicMessage,
   GetTopicDetailsRequest,
@@ -19,33 +19,32 @@ import {
   TopicConfig,
   TopicCreation,
   TopicUpdate,
-} from 'generated-sources';
-import { showServerError, showSuccessAlert } from 'lib/errorHandling';
+} from "generated-sources";
+import { showServerError, showSuccessAlert } from "lib/errorHandling";
 
 export const topicKeys = {
   all: (clusterName: ClusterName) =>
-    ['clusters', clusterName, 'topics'] as const,
+    ["clusters", clusterName, "topics"] as const,
   list: (
     clusterName: ClusterName,
-    filters: Omit<GetTopicsRequest, 'clusterName'>
+    filters: Omit<GetTopicsRequest, "clusterName">
   ) => [...topicKeys.all(clusterName), filters] as const,
   details: ({ clusterName, topicName }: GetTopicDetailsRequest) =>
     [...topicKeys.all(clusterName), topicName] as const,
   config: (props: GetTopicDetailsRequest) =>
-    [...topicKeys.details(props), 'config'] as const,
+    [...topicKeys.details(props), "config"] as const,
   schema: (props: GetTopicDetailsRequest) =>
-    [...topicKeys.details(props), 'schema'] as const,
+    [...topicKeys.details(props), "schema"] as const,
   consumerGroups: (props: GetTopicDetailsRequest) =>
-    [...topicKeys.details(props), 'consumerGroups'] as const,
+    [...topicKeys.details(props), "consumerGroups"] as const,
   statistics: (props: GetTopicDetailsRequest) =>
-    [...topicKeys.details(props), 'statistics'] as const,
+    [...topicKeys.details(props), "statistics"] as const,
 };
 
 export function useTopics(props: GetTopicsRequest) {
   const { clusterName, ...filters } = props;
-  return useQuery(
-    topicKeys.list(clusterName, filters),
-    () => api.getTopics(props)
+  return useQuery(topicKeys.list(clusterName, filters), () =>
+    api.getTopics(props)
   );
 }
 export function useTopicDetails(props: GetTopicDetailsRequest) {
@@ -82,16 +81,16 @@ const formatTopicCreation = (form: TopicFormData): TopicCreation => {
   } = form;
 
   const configs = {
-    'cleanup.policy': cleanupPolicy,
-    'retention.ms': retentionMs.toString(),
-    'max.message.bytes': maxMessageBytes.toString(),
-    'min.insync.replicas': minInSyncReplicas.toString(),
+    "cleanup.policy": cleanupPolicy,
+    "retention.ms": retentionMs.toString(),
+    "max.message.bytes": maxMessageBytes.toString(),
+    "min.insync.replicas": minInSyncReplicas.toString(),
     ...Object.values(customParams || {}).reduce(topicReducer, {}),
   };
 
   const cleanConfigs = () => {
     return Object.fromEntries(
-      Object.entries(configs).filter(([, val]) => val !== '')
+      Object.entries(configs).filter(([, val]) => val !== "")
     );
   };
 
@@ -101,7 +100,7 @@ const formatTopicCreation = (form: TopicFormData): TopicCreation => {
     configs: cleanConfigs(),
   };
 
-  return replicationFactor.toString() !== ''
+  return replicationFactor.toString() !== ""
     ? {
         ...topicsvalue,
         replicationFactor,
@@ -150,11 +149,11 @@ const formatTopicUpdate = (form: TopicFormDataRaw): TopicUpdate => {
   return {
     configs: {
       ...Object.values(customParams || {}).reduce(topicReducer, {}),
-      'cleanup.policy': cleanupPolicy,
-      'retention.ms': retentionMs,
-      'retention.bytes': retentionBytes,
-      'max.message.bytes': maxMessageBytes,
-      'min.insync.replicas': minInSyncReplicas,
+      "cleanup.policy": cleanupPolicy,
+      "retention.ms": retentionMs,
+      "retention.bytes": retentionBytes,
+      "max.message.bytes": maxMessageBytes,
+      "min.insync.replicas": minInSyncReplicas,
     },
   };
 };
@@ -217,7 +216,7 @@ export function useUpdateTopicReplicationFactor(props: GetTopicDetailsRequest) {
 export function useDeleteTopic(clusterName: ClusterName) {
   const client = useQueryClient();
   return useMutation(
-    (topicName: Topic['name']) => api.deleteTopic({ clusterName, topicName }),
+    (topicName: Topic["name"]) => api.deleteTopic({ clusterName, topicName }),
     {
       onSuccess: (_, topicName) => {
         showSuccessAlert({
@@ -235,7 +234,7 @@ export function useClearTopicMessages(
 ) {
   const client = useQueryClient();
   return useMutation(
-    async (topicName: Topic['name']) => {
+    async (topicName: Topic["name"]) => {
       await messagesApiClient.deleteTopicMessages({
         clusterName,
         partitions,
