@@ -45,8 +45,7 @@ export function useTopics(props: GetTopicsRequest) {
   const { clusterName, ...filters } = props;
   return useQuery(
     topicKeys.list(clusterName, filters),
-    () => api.getTopics(props),
-    { keepPreviousData: true }
+    () => api.getTopics(props)
   );
 }
 export function useTopicDetails(props: GetTopicDetailsRequest) {
